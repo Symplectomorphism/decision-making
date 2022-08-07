@@ -1,2 +1,3 @@
-# decision-making
-My stuyding off Kochenderfer's book _Algorithms for Decision Making_
+# Aykut's Study of _Algorithms for Decision Making_
+
+This repository consists my implementations and examples from Kochenderfer's book.
