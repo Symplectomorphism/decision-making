@@ -1,6 +1,7 @@
 using Base.Iterators
 using Distributions
 using LinearAlgebra
+using LightGraphs
 
 include("utility.jl")
 
@@ -37,4 +38,17 @@ function normalize!(ϕ::Factor)
         ϕ.table[a] = p/z
     end
     return ϕ
+end
+
+
+struct BayesianNetwork
+    vars::Vector{Variable}
+    factors::Vector{Factor}
+    graph::SimpleDiGraph{Int64}
+end
+
+function probability(bn::BayesianNetwork, assignment)
+    subassignment(ϕ) = select(assignment, variablenames(ϕ))
+    probability(ϕ) = get(ϕ.table, subassignment(ϕ), 0.0)
+    return prod(probability(ϕ) for ϕ in bn.factors)
 end

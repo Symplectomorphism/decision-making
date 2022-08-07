@@ -1,4 +1,4 @@
-include("discfactors.jl")
+include("network.jl")
 
 X = Variable(:x, 2)
 Y = Variable(:y, 2)
