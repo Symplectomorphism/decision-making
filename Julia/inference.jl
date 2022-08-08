@@ -1,6 +1,5 @@
 include("network.jl")
-#
-#################### inference 6
+
 function topological_sort_book(G)
 	G = deepcopy(G)
 	ordering = []
@@ -17,7 +16,6 @@ function topological_sort_book(G)
 	end
 	return ordering
 end
-####################
 
 
 function Base.:*(ϕ::Factor, ψ::Factor)
