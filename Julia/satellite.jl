@@ -1,4 +1,4 @@
-include("network.jl")
+include("inference.jl")
 
 B = Variable(:b, 2); S = Variable(:s, 2)
 E = Variable(:e, 2)
@@ -26,4 +26,12 @@ bn = BayesianNetwork(vars, factors, graph)
 
 fine = (b=1, s=1, e=1, d=1, c=1)
 fine_dev = (b=1, s=1, e=1, d=2, c=1)
-probability(bn, Assignment(fine_dev))
+display( probability(bn, Assignment(fine_dev)) )
+
+M = ExactInference()
+evidence = (d=2,)
+pre = reduce(marginalize, (prod(bn.factors), :e, :c, :d))
+post = infer(M, bn, [:b, :s], evidence)
+
+display(pre.table)
+display(post.table)

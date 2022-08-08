@@ -1,4 +1,4 @@
-include("network.jl")
+include("inference.jl")
 
 X = Variable(:x, 2)
 Y = Variable(:y, 2)
