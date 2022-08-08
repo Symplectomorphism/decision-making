@@ -1,4 +1,24 @@
 include("network.jl")
+#
+#################### inference 6
+function topological_sort_book(G)
+	G = deepcopy(G)
+	ordering = []
+	parentless = filter(i -> isempty(inneighbors(G, i)), 1:nv(G))
+	while !isempty(parentless)
+		i = pop!(parentless)
+		push!(ordering, i)
+		for j in copy(outneighbors(G, i))
+			rem_edge!(G, i, j)
+			if isempty(inneighbors(G, j))
+				push!(parentless, j)
+			end
+		end
+	end
+	return ordering
+end
+####################
+
 
 function Base.:*(ϕ::Factor, ψ::Factor)
     ϕnames = variablenames(ϕ)
@@ -15,6 +35,27 @@ function Base.:*(ϕ::Factor, ψ::Factor)
     vars = vcat(ϕ.vars, ψonly)
     return Factor(vars, table)
 end
+
+function Base.rand(ϕ::Factor)
+    tot, p, w = 0.0, rand(), sum(values(ϕ.table))
+    for (a,v) in ϕ.table
+        tot += v/w
+        if tot >= p
+            return a
+        end
+    end
+    return Assignment()
+end
+
+function Base.rand(bn::BayesianNetwork)
+    a = Assignment()
+    for i in topological_sort_book(bn.graph)
+        name, ϕ = bn.vars[i].name, bn.factors[i]
+        a[name] = rand(condition(ϕ, a))[name]
+    end
+    return a
+end
+
 
 function marginalize(ϕ::Factor, name)
     table = FactorTable()
@@ -54,6 +95,9 @@ struct ExactInference end
 struct VariableElimination
     ordering # array of variable indices
 end
+struct DirectSampling
+    m # number of samples
+end
 
 function infer(M::ExactInference, bn, query, evidence)
     ϕ = prod(bn.factors)
@@ -79,4 +123,17 @@ function infer(M::VariableElimination, bn, query, evidence)
         end
     end
     return normalize!(prod(Φ))
+end
+
+function infer(M::DirectSampling, bn, query, evidence)
+    table = FactorTable()
+    for i in 1:(M.m)
+        a = rand(bn)
+        if all(a[k] == v for (k,v) in pairs(evidence))
+            b = select(a, query)
+            table[b] = get(table, b, 0) + 1
+        end
+    end
+    vars = filter(v -> v.name ∈ query, bn.vars)
+    return normalize!(Factor(vars,table))
 end

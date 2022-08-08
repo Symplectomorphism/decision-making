@@ -1,7 +1,7 @@
 using Base.Iterators
 using Distributions
 using LinearAlgebra
-using LightGraphs
+using Graphs
 
 include("utility.jl")
 
