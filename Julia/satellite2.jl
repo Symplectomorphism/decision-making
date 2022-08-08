@@ -34,9 +34,12 @@ bn = BayesianNetwork(vars, factors, graph)
 # display( probability(bn, Assignment(fine_dev)) )
 
 M = ExactInference()
+V = VariableElimination([3,4,5,6,2,1])
 evidence = (da=2, db=2)
 pre = reduce(marginalize, (prod(bn.factors), :e, :c, :da, :db))
 post = infer(M, bn, [:b, :s], evidence)
+postvel = infer(V, bn, [:b, :s], evidence)
 
 display(pre.table)
 display(post.table)
+display(postvel.table)
