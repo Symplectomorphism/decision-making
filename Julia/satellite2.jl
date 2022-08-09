@@ -49,3 +49,7 @@ display(post.table)
 display(postvel.table)
 display(postsamp.table)
 display(postGibbs.table)
+
+
+D = MvNormal([0.0,1.0], [3.0 1.0; 1.0 2.0])
+cond = infer(D, [1],[2],[2.0])
